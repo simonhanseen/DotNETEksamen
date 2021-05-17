@@ -30,5 +30,35 @@ namespace Rema1000.API.Controllers
             return test;
 
         }
+
+        [HttpGet("Product")]
+        public async Task<Product> GetProduct(Guid id)
+        {
+            return await _catalogContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        [HttpPost("Product")]
+        public async Task<Product> CreateProduct([FromBody] Product newProduct)
+        {
+            await _catalogContext.Products.AddAsync(newProduct);
+            await _catalogContext.SaveChangesAsync();
+            return newProduct;
+        }
+
+        [HttpPut("Product")]
+        public async Task<Product> UpdateProduct([FromBody] Product newProduct)
+        {
+            _catalogContext.Set<Product>().Update(newProduct);
+            await _catalogContext.SaveChangesAsync();
+            return newProduct;
+        }
+
+        [HttpDelete("Product")]
+        public async Task DeleteProduct(Guid id)
+        {
+            var product = await _catalogContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            _catalogContext.Products.Remove(product);
+            await _catalogContext.SaveChangesAsync();
+        }
     }
 }
