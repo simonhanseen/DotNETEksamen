@@ -47,7 +47,7 @@ namespace Rema1000.API.Controllers
             return product != null ? Ok(product) : NotFound();
         }
 
-        [HttpPost("{id}")]
+        [HttpPost("")]
         public async Task<ActionResult<Product>> CreateProduct([FromBody] Product newProduct)
         {
             await _catalogContext.Products.AddAsync(newProduct);
@@ -57,8 +57,9 @@ namespace Rema1000.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Product>> UpdateProduct([FromBody] Product newProduct)
+        public async Task<ActionResult<Product>> UpdateProduct(Guid id, [FromBody] Product newProduct)
         {
+            newProduct.Id = id;
             _catalogContext.Set<Product>().Update(newProduct);
             await _catalogContext.SaveChangesAsync();
             return newProduct != null ? Ok(newProduct) : NotFound();

@@ -40,9 +40,10 @@ namespace Rema1000.API.Controllers
             return supplier != null ? Ok(supplier) : NotFound();
         }
 
-        [HttpPost("{id}")]
-        public async Task<ActionResult<Supplier>> CreateSupplier([FromBody] Supplier newSupplier)
+        [HttpPost("")]
+        public async Task<ActionResult<Supplier>> CreateSupplier(int id, [FromBody] Supplier newSupplier)
         {
+            newSupplier.Id = id;
             await _catalogContext.Suppliers.AddAsync(newSupplier);
             await _catalogContext.SaveChangesAsync();
 
