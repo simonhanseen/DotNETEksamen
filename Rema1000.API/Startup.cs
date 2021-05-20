@@ -60,14 +60,21 @@ namespace Rema1000.API
                 endpoints.MapControllers();
             });
         }
+        #region DummyData
 
         private static void SeedDummyData(IServiceProvider provider)
         {
             var catalogContext = provider.GetService<CatalogContext>();
+            catalogContext?.AddRange(CreateDummyCategories());
+            catalogContext?.AddRange(CreateDummySuppliers());
             catalogContext?.AddRange(CreateDummyProducts());
             catalogContext?.SaveChanges();
         }
 
+        /// <summary>
+        /// Seeding Products
+        /// </summary>
+        /// <returns></returns>
         private static IEnumerable<Product> CreateDummyProducts()
         {
             var rnd = new Random();
@@ -90,13 +97,61 @@ namespace Rema1000.API
                     AmountInPackage = rnd.Next(1, 20),
                     Price = rnd.NextDouble() * 1000,
                     Discount = null,
-                    Category = new Category() { Id = i, Name = $"Category {i}", Description = $"Description {i}" },
+                    CategoryId = i,
+                    //Category = new Category() { Id = i, Name = $"Category {i}", Description = $"Description {i}" },
                     AmountInStock = rnd.Next(0, 1000),
-                    Supplier = new Supplier() { Id = i, Name = $"Supplier {i}", Address = $"Mockstreet {i}", ZipCode = Convert.ToInt32($"{i}{i}{i}{i}"), Contact = "Mock Contact", Email = $"MockEmail{i}@Mockmail.com", PhoneNumber = $"+ 45 {i}{i} {i}{i} {i}{i} {i}{i}" }
+                    SupplierId = i
+                    //Supplier = new Supplier() { Id = i, Name = $"Supplier {i}", Address = $"Mockstreet {i}", ZipCode = $"{i}{i}{i}{i}", Contact = "Mock Contact", Email = $"MockEmail{i}@Mockmail.com", PhoneNumber = $"+ 45 {i}{i} {i}{i} {i}{i} {i}{i}" }
                 }) ;
             }
 
             return result;
         }
+
+
+        /// <summary>
+        /// Seeding Categories
+        /// </summary>
+        /// <returns></returns>
+        private static IEnumerable<Category> CreateDummyCategories()
+        {           
+            var result = new List<Category>();
+            for (var i = 1; i <= 10; i++)
+            {
+                result.Add(new Category()
+                {
+                    Id = i,
+                    Name = $"Category {i}",
+                    Description = $"Description {i}",         
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Seeding Suppliers
+        /// </summary>
+        /// <returns></returns>
+        private static IEnumerable<Supplier> CreateDummySuppliers()
+        {
+            var result = new List<Supplier>();
+            for (var i = 1; i <= 10; i++)
+            {
+                result.Add(new Supplier()
+                {
+                    Id = i,
+                    Name = $"Supplier {i}",
+                    Address = $"MockStreet {i}",
+                    ZipCode = $"{i}{i}{i}{i}",
+                    Contact = $"Mock Contact {i}",
+                    Email = $"MockEmail{i}@Mockmail.com",
+                    PhoneNumber = $"+ 45 {i}{i} {i}{i} {i}{i} {i}{i}"
+                });
+            }
+
+            return result;
+        }
+        #endregion
     }
 }

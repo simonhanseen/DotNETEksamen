@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Rema1000.API.Controllers
 {
-    [Route("[controller]")]
+    //[Route("[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -24,41 +24,63 @@ namespace Rema1000.API.Controllers
         }
 
         [HttpGet("Products")]
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            var test = await _catalogContext.Products.ToListAsync();
-            return test;
+            var products = await _catalogContext.Products.
+                Include(x => x.Supplier).
+                Include(x => x.Category).
+                ToListAsync();
 
+            return products != null ? Ok(products) : NotFound();
         }
 
-        [HttpGet("Product")]
-        public async Task<Product> GetProduct(Guid id)
+        [HttpGet("Products/{id}")]
+        public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
-            return await _catalogContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _catalogContext.Products.
+                Include(x => x.Supplier).
+                Include(x => x.Category).
+                FirstOrDefaultAsync(p => p.Id == id);
+
+            return product != null ? Ok(product) : NotFound();
         }
 
-        [HttpPost("Product")]
-        public async Task<Product> CreateProduct([FromBody] Product newProduct)
+        [HttpPost("Products/{id}")]
+        public async Task<ActionResult<Product>> CreateProduct([FromBody] Product newProduct)
         {
             await _catalogContext.Products.AddAsync(newProduct);
-            await _catalogContext.SaveChangesAsync();
-            return newProduct;
+
+            try
+            {
+                await _catalogContext.SaveChangesAsync();
+            }
+            catch(DbUpdateConcurrencyException)
+            {
+
+            }
+            return newProduct != null ? Ok(newProduct) : NotFound();
         }
 
-        [HttpPut("Product")]
-        public async Task<Product> UpdateProduct([FromBody] Product newProduct)
+        [HttpPut("Products/{id}")]
+        public async Task<ActionResult<Product>> UpdateProduct([FromBody] Product newProduct)
         {
             _catalogContext.Set<Product>().Update(newProduct);
             await _catalogContext.SaveChangesAsync();
-            return newProduct;
+            return newProduct != null ? Ok(newProduct) : NotFound();
         }
 
-        [HttpDelete("Product")]
-        public async Task DeleteProduct(Guid id)
+        [HttpDelete("Product/{id}")]
+        public async Task<ActionResult<Product>> DeleteProduct(Guid id)
         {
             var product = await _catalogContext.Products.FirstOrDefaultAsync(p => p.Id == id);
-            _catalogContext.Products.Remove(product);
-            await _catalogContext.SaveChangesAsync();
+
+            if (product != null)
+            {
+                _catalogContext.Products.Remove(product);
+                await _catalogContext.SaveChangesAsync();
+            }
+
+            return product != null ? Ok(product) : NotFound();
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rema1000.Core
 {
@@ -15,8 +13,13 @@ namespace Rema1000.Core
         public int AmountInPackage { get; set; }
         public double Price { get; set; }
         public double? Discount {get; set;}
+
+        public int CategoryId { get; set; }
         public Category Category { get; set; }
+
         public int AmountInStock { get; set; }
+
+        public int SupplierId { get; set; }
         public Supplier Supplier { get; set; }
 
     }
