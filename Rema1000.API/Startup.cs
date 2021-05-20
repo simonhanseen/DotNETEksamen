@@ -60,8 +60,8 @@ namespace Rema1000.API
                 endpoints.MapControllers();
             });
         }
-        #region DummyData
 
+        #region DummyData
         private static void SeedDummyData(IServiceProvider provider)
         {
             var catalogContext = provider.GetService<CatalogContext>();
