@@ -9,7 +9,10 @@ namespace Rema1000.Core
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Unit { get; set; }
+
+        public int UnitId { get; set; }
+        public Unit Unit { get; set; }
+
         public int AmountInPackage { get; set; }
         public double Price { get; set; }
         public double? Discount {get; set;}

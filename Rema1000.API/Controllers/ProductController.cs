@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Rema1000.API.Controllers
 {
-    //[Route("[controller]")]
+    [Route("[controller]s")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -23,10 +23,11 @@ namespace Rema1000.API.Controllers
             _catalogContext = catalogContext;
         }
 
-        [HttpGet("Products")]
+        [HttpGet("")]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
             var products = await _catalogContext.Products.
+                Include(x => x.Unit).
                 Include(x => x.Supplier).
                 Include(x => x.Category).
                 ToListAsync();
@@ -34,10 +35,11 @@ namespace Rema1000.API.Controllers
             return products != null ? Ok(products) : NotFound();
         }
 
-        [HttpGet("Products/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
             var product = await _catalogContext.Products.
+                Include(x => x.Unit).
                 Include(x => x.Supplier).
                 Include(x => x.Category).
                 FirstOrDefaultAsync(p => p.Id == id);
@@ -45,23 +47,16 @@ namespace Rema1000.API.Controllers
             return product != null ? Ok(product) : NotFound();
         }
 
-        [HttpPost("Products/{id}")]
+        [HttpPost("{id}")]
         public async Task<ActionResult<Product>> CreateProduct([FromBody] Product newProduct)
         {
             await _catalogContext.Products.AddAsync(newProduct);
+            await _catalogContext.SaveChangesAsync();
 
-            try
-            {
-                await _catalogContext.SaveChangesAsync();
-            }
-            catch(DbUpdateConcurrencyException)
-            {
-
-            }
             return newProduct != null ? Ok(newProduct) : NotFound();
         }
 
-        [HttpPut("Products/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<Product>> UpdateProduct([FromBody] Product newProduct)
         {
             _catalogContext.Set<Product>().Update(newProduct);
@@ -69,10 +64,14 @@ namespace Rema1000.API.Controllers
             return newProduct != null ? Ok(newProduct) : NotFound();
         }
 
-        [HttpDelete("Product/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Product>> DeleteProduct(Guid id)
         {
-            var product = await _catalogContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _catalogContext.Products.
+                Include(x => x.Unit).
+                Include(x => x.Supplier).
+                Include(x => x.Category).
+                FirstOrDefaultAsync(p => p.Id == id);
 
             if (product != null)
             {

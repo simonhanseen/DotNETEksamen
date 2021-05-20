@@ -67,6 +67,7 @@ namespace Rema1000.API
             var catalogContext = provider.GetService<CatalogContext>();
             catalogContext?.AddRange(CreateDummyCategories());
             catalogContext?.AddRange(CreateDummySuppliers());
+            catalogContext?.AddRange(CreateDummyUnits());
             catalogContext?.AddRange(CreateDummyProducts());
             catalogContext?.SaveChanges();
         }
@@ -78,14 +79,14 @@ namespace Rema1000.API
         private static IEnumerable<Product> CreateDummyProducts()
         {
             var rnd = new Random();
-            string Unit = "";
+            int Unit = 0;
             var result = new List<Product>();
             for (var i = 1; i <= 10; i++)
             {
                 if (i % 2 == 0)
-                    Unit = "Unit";
+                    Unit = 1;
                 else
-                    Unit = "Kg";
+                    Unit = 2;
 
                 var productId = Guid.NewGuid();
                 result.Add(new Product()
@@ -93,15 +94,13 @@ namespace Rema1000.API
                     Id = productId,
                     Name = $"Product {i}",
                     Description = $"Description {i}",
-                    Unit = Unit,
+                    UnitId = Unit,
                     AmountInPackage = rnd.Next(1, 20),
                     Price = rnd.NextDouble() * 1000,
                     Discount = null,
                     CategoryId = i,
-                    //Category = new Category() { Id = i, Name = $"Category {i}", Description = $"Description {i}" },
                     AmountInStock = rnd.Next(0, 1000),
                     SupplierId = i
-                    //Supplier = new Supplier() { Id = i, Name = $"Supplier {i}", Address = $"Mockstreet {i}", ZipCode = $"{i}{i}{i}{i}", Contact = "Mock Contact", Email = $"MockEmail{i}@Mockmail.com", PhoneNumber = $"+ 45 {i}{i} {i}{i} {i}{i} {i}{i}" }
                 }) ;
             }
 
@@ -147,6 +146,31 @@ namespace Rema1000.API
                     Contact = $"Mock Contact {i}",
                     Email = $"MockEmail{i}@Mockmail.com",
                     PhoneNumber = $"+ 45 {i}{i} {i}{i} {i}{i} {i}{i}"
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Seeding Unit
+        /// </summary>
+        /// <returns></returns>
+        private static IEnumerable<Unit> CreateDummyUnits()
+        {
+            var result = new List<Unit>();
+            string Unit = "";
+            for (int i = 1; i <= 2; i++)
+            {
+                if (i % 2 == 0)
+                    Unit = "Kg";
+                else
+                    Unit = "Unit";
+
+                result.Add(new Unit()
+                {
+                    Id = i,
+                    Name = Unit
                 });
             }
 

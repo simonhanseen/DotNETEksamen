@@ -11,6 +11,8 @@ namespace Rema1000.Infrastructure
         public DbSet<Product> Products { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
 
+        public DbSet<Unit> Units { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseInMemoryDatabase("Products");//options.UseSqlite("Data Source=products.db");
     }
