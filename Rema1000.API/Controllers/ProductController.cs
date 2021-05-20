@@ -59,9 +59,19 @@ namespace Rema1000.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Product>> UpdateProduct(Guid id, [FromBody] Product newProduct)
         {
+
             newProduct.Id = id;
+
             _catalogContext.Set<Product>().Update(newProduct);
-            await _catalogContext.SaveChangesAsync();
+
+            try
+            {
+                await _catalogContext.SaveChangesAsync();
+            }
+            catch(DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
             return newProduct != null ? Ok(newProduct) : NotFound();
         }
 
