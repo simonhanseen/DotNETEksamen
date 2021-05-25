@@ -47,10 +47,22 @@ namespace Rema1000.API.Controllers
             return product != null ? Ok(product) : NotFound();
         }
 
+        /// <summary>
+        /// Id is required here, but normally the database would set id on its own
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newProduct"></param>
+        /// <returns></returns>
+
         [HttpPost("{id}")]
         public async Task<ActionResult<Product>> CreateProduct(Guid id, [FromBody] Product newProduct)
         {
             newProduct.Id = id;
+
+            var exists = _catalogContext.Products.Any(x => x.Id == id);
+
+            if (exists)
+                return BadRequest("Id already exists");
 
             await _catalogContext.Products.AddAsync(newProduct);
             await _catalogContext.SaveChangesAsync();

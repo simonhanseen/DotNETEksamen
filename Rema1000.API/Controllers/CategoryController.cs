@@ -40,10 +40,21 @@ namespace Rema1000.API.Controllers
             return category != null ? Ok(category) : NotFound();
         }
 
+        /// <summary>
+        /// Id is required here, but normally the database would set id on its own
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newCategory"></param>
+        /// <returns></returns>
         [HttpPost("{id}")]
         public async Task<ActionResult<Category>> CreateCategory(int id, [FromBody] Category newCategory)
         {
             newCategory.Id = id;
+
+            var exists = _catalogContext.Categories.Any(x => x.Id == id);
+
+            if (exists)
+                return BadRequest("Id already exists");
 
             await _catalogContext.Categories.AddAsync(newCategory);
             await _catalogContext.SaveChangesAsync();

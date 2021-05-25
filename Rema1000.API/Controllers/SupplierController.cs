@@ -39,11 +39,21 @@ namespace Rema1000.API.Controllers
 
             return supplier != null ? Ok(supplier) : NotFound();
         }
-
-        [HttpPost("")]
+        /// <summary>
+        /// Id is required here, but normally the database would set the id on its own
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newSupplier"></param>
+        /// <returns></returns>
+        [HttpPost("{id}")]
         public async Task<ActionResult<Supplier>> CreateSupplier(int id, [FromBody] Supplier newSupplier)
         {
             newSupplier.Id = id;
+
+            var exists = _catalogContext.Suppliers.Any(x => x.Id == id);
+
+            if (exists)
+                return BadRequest("Id already exists");
 
             await _catalogContext.Suppliers.AddAsync(newSupplier);
             await _catalogContext.SaveChangesAsync();
