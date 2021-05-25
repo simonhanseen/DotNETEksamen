@@ -44,6 +44,7 @@ namespace Rema1000.API.Controllers
         public async Task<ActionResult<Supplier>> CreateSupplier(int id, [FromBody] Supplier newSupplier)
         {
             newSupplier.Id = id;
+
             await _catalogContext.Suppliers.AddAsync(newSupplier);
             await _catalogContext.SaveChangesAsync();
 
@@ -51,10 +52,19 @@ namespace Rema1000.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Supplier>> UpdateSupplier([FromBody] Supplier newSupplier)
+        public async Task<ActionResult<Supplier>> UpdateSupplier(int id, [FromBody] Supplier newSupplier)
         {
+            newSupplier.Id = id;
+
             _catalogContext.Set<Supplier>().Update(newSupplier);
-            await _catalogContext.SaveChangesAsync();
+            try
+            {
+                await _catalogContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
 
             return newSupplier != null ? Ok(newSupplier) : NotFound();
         }

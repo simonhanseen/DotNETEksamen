@@ -40,9 +40,10 @@ namespace Rema1000.API.Controllers
             return category != null ? Ok(category) : NotFound();
         }
 
-        [HttpPost("")]
-        public async Task<ActionResult<Category>> CreateCategory([FromBody] Category newCategory)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Category>> CreateCategory(int id, [FromBody] Category newCategory)
         {
+            newCategory.Id = id;
 
             await _catalogContext.Categories.AddAsync(newCategory);
             await _catalogContext.SaveChangesAsync();
@@ -55,7 +56,14 @@ namespace Rema1000.API.Controllers
         {
             newCategory.Id = id;
             _catalogContext.Set<Category>().Update(newCategory);
-            await _catalogContext.SaveChangesAsync();
+            try
+            {
+                await _catalogContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
 
             return newCategory != null ? Ok(newCategory) : NotFound();
         }

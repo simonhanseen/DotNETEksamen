@@ -47,9 +47,11 @@ namespace Rema1000.API.Controllers
             return product != null ? Ok(product) : NotFound();
         }
 
-        [HttpPost("")]
-        public async Task<ActionResult<Product>> CreateProduct([FromBody] Product newProduct)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Product>> CreateProduct(Guid id, [FromBody] Product newProduct)
         {
+            newProduct.Id = id;
+
             await _catalogContext.Products.AddAsync(newProduct);
             await _catalogContext.SaveChangesAsync();
 
